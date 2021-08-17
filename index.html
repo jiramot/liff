@@ -1,0 +1,56 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My LIFF v2</title>
+  <style>
+    #pictureUrl { display: block; margin: 0 auto }
+  </style>
+  <script src="node_modules/vconsole/dist/vconsole.min.js"></script>
+  <script>
+    var vConsole = new VConsole();
+  </script>
+</head>
+<body>
+  <img id="pictureUrl" width="25%">
+  <p id="userId"></p>
+  <p id="displayName"></p>
+  <p id="statusMessage"></p>
+  <p id="getDecodedIDToken"></p>
+  <p id="getIDToken"></p>
+  <p id="getAccessToken"></p>
+  <p id="userAgent"></p>
+  <p id="os"></p>
+  <p id="isInClient"></p>
+  <p id="getLineVersion"></p>
+  <!-- <script src="https://static.line-scdn.net/liff/edge/versions/2.9.0/sdk.js"></script> -->
+  <script src="./liff.js"></script>
+  <script>
+    function runApp() {
+        console.log("runapp")
+        liff.getProfile().then(profile => {
+            document.getElementById("pictureUrl").src = profile.pictureUrl;
+            document.getElementById("userId").innerHTML = '<b>UserId:</b> ' + profile.userId;
+            document.getElementById("displayName").innerHTML = '<b>DisplayName:</b> ' + profile.displayName;
+            document.getElementById("statusMessage").innerHTML = '<b>StatusMessage:</b> ' + profile.statusMessage;
+            document.getElementById("getDecodedIDToken").innerHTML = '<b>Email:</b> ' + liff.getDecodedIDToken().email;
+            document.getElementById("getIDToken").innerHTML = '<b>ID Token:</b> ' + liff.getIDToken();
+            document.getElementById("getAccessToken").innerHTML = '<b>Access Token:</b> ' + liff.getAccessToken();
+            document.getElementById("userAgent").innerHTML = '<b>userAgent:</b> ' + navigator.userAgent;
+            document.getElementById("os").innerHTML = '<b>os:</b> ' + liff.getOS();
+            document.getElementById("isInClient").innerHTML = '<b>isInClient:</b> ' + liff.isInClient();
+            document.getElementById("getLineVersion").innerHTML = '<b>getLineVersion:</b> ' + liff.getLineVersion();
+        }).catch(err => console.error(err));
+    }
+    liff.init({ liffId: "1656308535-MR5VjjD0" }, () => {
+        if (liff.isLoggedIn()) {
+            console.log("[index]: already login")
+            runApp()
+        } else {
+            console.log("[index]: login")
+            liff.login();
+        }
+    }, err => console.error("err"));
+  </script>
+</body>
+</html>
