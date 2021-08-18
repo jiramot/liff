@@ -1,0 +1,83 @@
+@startuml
+hide footbox
+
+participant "Line App" as lineApp
+participant "Line Web view" as lineWebView
+participant "Line Open API" as lineApi
+
+participant "3rd Web view" as partnerWebView
+participant "JS SDK" as jsSdk
+participant "3rd API" as partnerApi
+
+
+
+lineApp -> lineApp : open liff app with
+note left
+    http://liff.line.me/{liffId}
+end note
+
+lineApp -> lineApi : generate access_token for {liffId}
+activate lineApi
+note right
+<b>(Oauth2 Implicit Grant Type)</b>
+end note
+lineApi -> lineApi : check permission allow
+group first time usage
+lineApi -> lineWebView : redirect to permission screen
+
+lineWebView --> lineApi : grant permission
+end
+
+lineApi -> lineApi : create access_token
+lineApi -> lineApp : return access_token
+deactivate lineApi
+
+note right
+- access_token
+- context_token
+- feature_token
+- id_token
+- client_id
+- mst_challenge
+- redirect_url
+end note
+
+lineApp -> partnerWebView : open internal browser
+note right
+using url fragment (hashtag)
+https://{redirect_url}#access_token={access_token}&client_id={client_id}...
+end note
+
+partnerWebView -> partnerWebView : execute javascript
+partnerWebView -> jsSdk : initialize context
+jsSdk -> jsSdk : initialize context
+alt isInClient
+jsSdk -> jsSdk : store access_token, client_id,... from url fragment to sessionStorage
+else external browser
+jsSdk -> lineApi : request access_token
+note right
+(Oauth2 Authorization code)
+- authorization_code
+- app_id
+- client_id
+- redirect_uri
+' https://api.line.me/oauth2/v2.1/token
+' "grant_type=authorization_code&client_id=1656308535&appId=1656308535-MR5VjjD0&code=dfwIxvvHZ4nJamjo8RD0&code_verifier=kdOpv3fjbghFh2CiwFVTrxmufWmLoffrbP3FtwzUaDQ&redirect_uri=https%3A%2F%2F5cbc8604269e.ngrok.io%2F&id_token_key_type=JWK"
+end note
+lineApi --> jsSdk : return access_token and refresh_token
+note right
+'{
+'    "access_token": "eyJhbGciOiJIUzI1NiJ9.Hx4GmzfI5D5EGd_TnlbIls4z5uBN2gVm2paKd9MFJwHqeH7FVW9eztm20vU2MFZSZfZoQ8o-w3q4Yi4xACdjEC4iFUe89plD3E2Z5E80k3axhF5lPWRtgDNgbFCtVxRCnSU0bjkXfCjwopYy5CV5Sj5nKB5M-xtNPrgKgSrPcIg.-mG1bJtRqJCkz1-7miTpwl9OtUp--XSFvbo7RHhHYnY",
+'    "token_type": "Bearer",
+'    "refresh_token": "WR2yvnU05978FqUMnysW",
+'    "expires_in": 43200,
+'    "scope": "profile openid",
+'    "id_token": "eyJraWQiOiI4Y2NlOGYwNzRlZDAyMzc4ZmE4MDcwNTY0NDgxMmEyNjcyZWQ3NzUxZjViOTA2OTg5MzU1NzczNGYyMWJmNzI4IiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJodHRwczovL2FjY2Vzcy5saW5lLm1lIiwic3ViIjoiVWM0YTM1M2UzYWJhOGZjN2M5Y2U0YWE3MGY3Yjk3Yzc2IiwiYXVkIjoiMTY1NjMwODUzNSIsImV4cCI6MTYyOTI4NDY1OSwiaWF0IjoxNjI5MjgxMDU5LCJhbXIiOlsibGluZXNzbyJdLCJuYW1lIjoiaWFtcGFlIiwicGljdHVyZSI6Imh0dHBzOi8vcHJvZmlsZS5saW5lLXNjZG4ubmV0LzBoT0ZybXFLS05FR2xQRkRoY2Y3aHZQbk5SSGdRNE9oWWhOM0pYQjJJWFNBdGhjRkpxZHlJTldtNFhHUXBsSUZkcmN5SmNYejlBSGxGciJ9.E2JT6-cxNNbM8UOafEVQoxvhZhfeCkaPska1YwRLsIxaQnRMKaK270t7CmjHB1xKQer0qlN-f5hX9H4KqbVJsg"
+'}
+- access_token
+- refresh_token
+end note
+jsSdk -> jsSdk : store access_token, client_id,... from query param to "Local Storage"
+end
+
+@enduml
