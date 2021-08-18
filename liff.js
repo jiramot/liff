@@ -2347,10 +2347,13 @@
             function ae(e) {
                 saveData(TOKEN_CONSTANT.FEATURES, e);
             }
-            function ue() {
-                return readData(TOKEN_CONSTANT.LOGIN_TMP);
+            function readLoginTmp() {
+                let loginTmp = readData(TOKEN_CONSTANT.LOGIN_TMP);
+                console.log("loginTmp")
+                console.log(loginTmp)
+                return loginTmp;
             }
-            function ce() {
+            function clearLoginTmp() {
                 removeData(TOKEN_CONSTANT.LOGIN_TMP);
             }
             function getAccessToken() {
@@ -2455,6 +2458,7 @@
                     return e;
                 };
             function Ce(e) {
+                console.log("Ce(e)")
                 return initContext(this, void 0, void 0, function () {
                     var t, n, r;
                     return j(this, function (i) {
@@ -2596,10 +2600,11 @@
                 return "2.9.0";
             }
             function login(e) {
-                console.log("login")
+                console.log("login redirect")
                 var t = Be(43),
                     n = Fe(t),
                     r = oe();
+                debugger;
                 if (!r || !r.liffId) throw Z("INVALID_CONFIG", "You need to define `liffId` for liff.login()");
                 var i = { app_id: r.liffId, state: Be(12), response_type: "code", code_challenge_method: "S256", code_challenge: n, liff_sdk_version: "2.9.0" };
                 e && e.redirectUri && (i.redirect_uri = e.redirectUri), saveData(TOKEN_CONSTANT.LOGIN_TMP, { codeVerifier: t });
@@ -2717,6 +2722,8 @@
                 return n;
             }
             function tt(e) {
+                console.log("fetch response")
+                console.log(e)
                 return initContext(this, void 0, void 0, function () {
                     var t, n, r;
                     return j(this, function (i) {
@@ -2763,6 +2770,8 @@
                 } catch (r) {
                     return Promise.reject(r);
                 }
+                console.log("fetch url: " + e)
+                console.log(n)
                 return fetch(e, n).then(tt);
             }
             function it(e, t) {
@@ -2775,6 +2784,7 @@
                 return fetch(e, n);
             }
             var ot = function () {
+                    console.log("ot")
                     return initContext(this, void 0, void 0, function () {
                         return j(this, function (e) {
                             switch (e.label) {
@@ -2791,6 +2801,7 @@
                     var e;
                 };
             function at(e, t, r) {
+                console.log("at")
                 return initContext(this, void 0, void 0, function () {
                     var i, o, s, a;
                     return j(this, function (u) {
@@ -3020,6 +3031,7 @@
                             configurable: !0,
                         }),
                             (e.prototype.install = function () {
+                                console.log("install")
                                 return this.impl.invoke.bind(this.impl);
                             }),
                             e
@@ -3029,14 +3041,15 @@
             function Tt(e) {
                 return fetchData(getUrl("apps") + "/" + e + "/featureToken");
             }
-            function Et(e) {
+            function initialContextFromLineClient(e) {
+                console.log("initialContextFromLineClient")
                 return initContext(this, void 0, void 0, function () {
-                    var t, n, r, i, o, s, a;
+                    var hashParamsFromClient, n, r, i, o, s, a;
                     return j(this, function (u) {
                         switch (u.label) {
                             case 0:
                                 return (
-                                    (t = json.parse(window.location.hash)),
+                                    (hashParamsFromClient = json.parse(window.location.hash)),
                                         (n = (function (e) {
                                             for (var t, n, r = [], i = 1; i < arguments.length; i++) r[i - 1] = arguments[i];
                                             var o = function (t) {
@@ -3063,7 +3076,7 @@
                                                 }
                                             }
                                             return e;
-                                        })({ access_token: getAccessToken(), context_token: readData(TOKEN_CONSTANT.RAW_CONTEXT), feature_token: we(), id_token: getIDToken(), client_id: readData(TOKEN_CONSTANT.CLIENT_ID), mst_challenge: _e(), mst_verifier: readData(TOKEN_CONSTANT.MST_VERIFIER), msit: readData(TOKEN_CONSTANT.MSIT) }, t)),
+                                        })({ access_token: getAccessToken(), context_token: readData(TOKEN_CONSTANT.RAW_CONTEXT), feature_token: we(), id_token: getIDToken(), client_id: readData(TOKEN_CONSTANT.CLIENT_ID), mst_challenge: _e(), mst_verifier: readData(TOKEN_CONSTANT.MST_VERIFIER), msit: readData(TOKEN_CONSTANT.MSIT) }, hashParamsFromClient)),
                                         mt() ? (isLoggedIn() ? [4, Tt(e)] : [3, 2]) : [3, 3]
                                 );
                             case 1:
@@ -3117,7 +3130,7 @@
                                     }),
                                 ];
                             case 1:
-                                return m.sent(), "boolean" == typeof pt && log.warn("liff.init is not expected to readContext called more than once"), (pt = vt()), [4, Et(e.liffId)];
+                                return m.sent(), "boolean" == typeof pt && log.warn("liff.init is not expected to readContext called more than once"), (pt = vt()), [4, initialContextFromLineClient(e.liffId)];
                             case 2:
                                 return (
                                     (t = m.sent()),
@@ -3229,6 +3242,7 @@
                 });
             }
             function kt(e) {
+                console.log("kt(e)")
                 return initContext(this, void 0, void 0, function () {
                     var t,
                         n,
@@ -3238,8 +3252,9 @@
                         switch (o.label) {
                             case 0:
                                 (t = function () {
+                                    console.log("bbb")
                                     return initContext(i, void 0, void 0, function () {
-                                        var t, n, r, i, o, s;
+                                        var t, accessToken, idToken, expiresIn, o, s;
                                         return j(this, function (a) {
                                             switch (a.label) {
                                                 case 0:
@@ -3247,7 +3262,7 @@
                                                         4,
                                                         ((u = oe()),
                                                             (queryParams = json.parse(window.location.search)),
-                                                            (l = ue()),
+                                                            (l = readLoginTmp()),
                                                             (jsonRequest = {
                                                                 grant_type: "authorization_code",
                                                                 client_id: queryParams.liffClientId,
@@ -3258,22 +3273,25 @@
                                                                 id_token_key_type: "JWK",
                                                             }),
                                                             (requestBody = json.stringify(jsonRequest)),
+                                                            (console.log("aa")),
                                                             fetchData(getUrl("token"), { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" }, body: requestBody })),
                                                     ];
                                                 case 1:
                                                     return (
-                                                        (t = a.sent()),
-                                                            (n = t.access_token),
-                                                            (r = t.id_token),
-                                                            (i = t.expires_in),
+                                                            console.log("case 1"),
+                                                            (t = a.sent()),
+                                                            (console.log(t)),
+                                                            (accessToken = t.access_token),
+                                                            (idToken = t.id_token),
+                                                            (expiresIn = t.expires_in),
                                                             saveClientId(e),
-                                                            saveAccessToken(n),
+                                                            saveAccessToken(accessToken),
                                                             (function (e) {
                                                                 var t = oe();
                                                                 ne.set(LINE_STORE + ":" + TOKEN_CONSTANT.EXPIRES + ":" + t.liffId, e.getTime(), { expires: e.toUTCString(), path: "/", secure: null });
-                                                            })(new Date(Date.now() + 1e3 * i)),
-                                                            ce(),
-                                                            r ? (saveTokenId(r), [4, ut(r, e)]) : [3, 3]
+                                                            })(new Date(Date.now() + 1e3 * expiresIn)),
+                                                            clearLoginTmp(),
+                                                            idToken ? (saveTokenId(idToken), [4, ut(idToken, e)]) : [3, 3]
                                                     );
                                                 case 2:
                                                     (o = a.sent()) && saveDecodedIdToken(o), (a.label = 3);
@@ -3296,7 +3314,7 @@
                             case 2:
                                 return o.sent(), [3, 4];
                             case 3:
-                                throw ((n = o.sent()), (r = n), ce(), r);
+                                throw ((n = o.sent()), (r = n), clearLoginTmp(), r);
                             case 4:
                                 return [2];
                         }
@@ -3491,7 +3509,7 @@
                                 if (!t.liffId) throw Z("INVALID_CONFIG", "liffId is necessary for liff.init()");
                                 if (((ie = t), Le((n = json.parse(window.location.search))), _t() && !isInClient() && (window.removeEventListener("message", rn), window.addEventListener("message", rn)), n.error && n.liffOAuth2Error))
                                     throw ((s = n.error), (a = n.error_description), (u = a.replace(/\+/g, " ")), Z(M, s + ": " + u));
-                                return (i = n.code), (o = ue()), Boolean(i && !isLoggedIn() && o && o.codeVerifier) ? [4, kt(n.liffClientId)] : [3, 2];
+                                return (i = n.code), (o = readLoginTmp()), Boolean(i && !isLoggedIn() && o && o.codeVerifier) ? [4, kt(n.liffClientId)] : [3, 2];
                             case 1:
                                 r.sent(), (r.label = 2);
                             case 2:
@@ -3582,9 +3600,7 @@
 
                 return initContext(this, void 0, void 0, function () {
                     var r;
-                    console.log(i)
                     return j(this, function (i) {
-                        console.log("label" + i.label)
                         switch (i.label) {
                             case 0:
                                 return i.trys.push([0, 2, , 3]), [4, Promise.all([context(this), on(this, params)])];
@@ -4411,6 +4427,7 @@
                     }
                     return (
                         (e.prototype.install = function (e) {
+                            console.log("install 2")
                             return this.factory(this.driver, e);
                         }),
                             Object.defineProperty(e.prototype, "name", {
