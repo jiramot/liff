@@ -1,0 +1,18 @@
+@startuml
+hide footbox
+
+participant "3rd Web view" as partnerWebView
+participant "JS SDK" as jsSdk
+participant "Line Web" as lineWebView
+participant "Line Open API" as lineApi
+
+!include liff_js_sdk.puml!init_context
+partnerWebView -> partnerWebView : check isLoggedIn
+
+alt is not logged in
+partnerWebView -> jsSdk : login
+!include liff_js_sdk.puml!login
+!include liff_js_sdk.puml!store_token
+end not logged in
+
+@enduml
